@@ -90,7 +90,7 @@ class GridWorld:
         self.epsilon = config.epsilon
         self.max_iterations = config.max_iterations
         
-    
+    ##### Initialize Value Function #####
     def initializeValueFunction(self, config):
         if config.randomValueFunctionInit:
             logger.info("Using V value function with random initialization")
@@ -108,6 +108,7 @@ class GridWorld:
                 self.currentQ = {state: {action: 0 for action in self.actions} for state in self.states}
         return self.currentV, self.currentQ
     
+    ##### Initialize Policy #####
     def initializePolicy(self, config):
         if config.randomPolicyInit:
             logger.info("Using random policy initialization")
@@ -121,6 +122,7 @@ class GridWorld:
                 self.current_policy[state] = {action: 0 for action in self.actions}
         return self.current_policy
 
+    ##### Get Next States #####
     def getNextStates(self, current_state):
         x, y = current_state
         nextStates = {}
@@ -138,6 +140,7 @@ class GridWorld:
             nextStates[action] = nextState
         return nextStates
 
+    ##### Step #####
     def step(self, current_state, action):
         x, y = current_state
         if action == "up":
@@ -161,6 +164,7 @@ class GridWorld:
             
         return current_state, action, nextState, reward, done
 
+    ##### Policy Evaluation #####
     def calculateValueFunction(self):
         for state in self.states:
             # Check if the state is a terminal state, if so set the value to 0 and continue
@@ -178,6 +182,7 @@ class GridWorld:
             
         return self.newV
 
+    ##### Policy Improvement #####
     def policyImprovement(self):
         # Policy improvement phase
         for state in self.states:
@@ -207,6 +212,7 @@ class GridWorld:
 
         return self.current_policy
 
+    ##### Policy Iteration #####
     def policyIterationV(self, config):
         # Initialize the value function and policy
         self.initializeValueFunction(config)
@@ -272,6 +278,7 @@ class GridWorld:
 
         return self.current_policy
 
+    ##### Value Iteration #####
     def valueIterationV(self, config):
         pass
 
@@ -530,6 +537,7 @@ def main():
             #logger.info(f"Optimal policy: {optimal_policy}")
         elif config.task == "value_iteration":
             grid_world.valueIterationV(config)
+
     # elif config.valueFunctionInit == "Q":
     #     if config.task == "policy_iteration":
     #         optimal_policy = grid_world.policyIterationQ(config)
