@@ -6,7 +6,7 @@ Title: Assignment 1 - AI for multiagent systems
 Instructions to run the code:
 usage: python assignment1_main.py [-h] [--task {policy_iteration,value_iteration}] \\
     [--gamma GAMMA] [--epsilon EPSILON] [--max_iterations MAX_ITERATIONS] \\
-    [--grid_size GRID_SIZE] [--stepReward STEPREWARD] [--goalReward GOALREWARD] \\
+    [--grid_size grid_size] [--stepReward STEPREWARD] [--goalReward GOALREWARD] \\
     [--valueFunctionInit {V,Q}] [--randomValueFunctionInit] [--randomPolicyInit] \\
     [--problem {1,2,3,4}] [--plotTable] [--goalStates GOALSTATES]
 
@@ -16,7 +16,7 @@ usage: python assignment1_main.py [-h] [--task {policy_iteration,value_iteration
     --gamma GAMMA                           Gamma for the value iteration
     --epsilon EPSILON                       Epsilon for the value iteration
     --max_iterations MAX_ITERATIONS         Maximum number of iterations for the value iteration and policy iteration
-    --grid_size GRID_SIZE                   Size of the grid N
+    --grid_size grid_size                   Size of the grid N
     --stepReward STEPREWARD                 Step reward
     --goalReward GOALREWARD                 Goal reward
     --valueFunctionInit {V,Q}               Type of value function used V or Q
@@ -282,13 +282,21 @@ class GridWorld:
     ##### Get Output Deterministic Policy #####
     def getOutputDeterministicPolicy(self):
         # get next states for each state
-        nextStates = {state: self.getNextStates(state) for state in self.states}
         policy = {state: {action: 0 for action in self.actions} for state in self.states}
         for state in self.states:
-            if state in self.terminal_states:
-                continue
-            max_action = max(nextStates[state].items(), key=lambda x: self.currentV[x[1]])[0]
-            policy[state] = max_action
+            nextStates = self.getNextStates(state)
+            Vvalues = [self.currentV[nextStates[action]] for action in self.actions]
+            max_value = max(Vvalues)
+            best_actions = []
+            for i, action in enumerate(self.actions):
+                if Vvalues[i] == max_value:
+                    if nextStates[action] in self.terminal_states:
+                        best_actions.insert(0, action)
+                    else:
+                        best_actions.append(action)
+            max_action = best_actions[0]
+            policy[state] = {action: 0 for action in self.actions}
+            policy[state][max_action] = 1
         return policy
 
     ##### Value Iteration #####
@@ -296,30 +304,32 @@ class GridWorld:
         # Initialize the value function
         self.initializeValueFunction(config)
         converged = False
-        count = 0
         VList = []
-        while not converged:
+        for iter in range(config.max_iterations):
             delta = 0
             for state in self.states:
-                v = self.currentV[state]
+                if state in self.terminal_states:
+                    self.newV[state] = 0
+                    continue
                 nextStates = self.getNextStates(state)
-
-                for action in self.actions:
-                    _, _, nextState, reward, done = self.step(state, action)
-                    # uniform distribution for the next state
-                    nextStateProb = 1/len(nextStates)
-
-                    max_action = max(nextStates, key=lambda x: self.currentV[x])
-                    nextState = nextStates[max_action]
-                    v += nextStateProb * (reward + self.gamma * self.currentV[nextState])
-                self.newV[state] = v
-                delta = max(delta, math.fabs(v - self.currentV[state]))
+                Vvalues = [self.currentV[nextStates[action]] for action in self.actions]
+                max_value = max(Vvalues)
+                best_actions = []
+                for i, action in enumerate(self.actions):
+                    if Vvalues[i] == max_value:
+                        if nextStates[action] in self.terminal_states:
+                            best_actions.insert(0, action)
+                        else:
+                            best_actions.append(action)
+                max_action = best_actions[0]
+                _, _, nextState, reward, _ = self.step(state, max_action)
+                self.newV[state] = reward + self.gamma * self.currentV[nextState]
+                delta = max(delta, math.fabs(self.currentV[state] - self.newV[state]))
             self.currentV = self.newV.copy()
             if delta < config.epsilon:
-                logger.info(f"Value iteration converged after {count+1} iterations")
+                logger.info(f"Value iteration converged after {iter+1} iterations")
                 converged = True
                 break
-            count += 1
         
         optimal_policy = self.getOutputDeterministicPolicy()
 
@@ -527,8 +537,7 @@ def main():
 
     if config.problem == 1:
         # Prob 1
-        logger.info(f"Performing calculations for Prob 1: {config.task} with {config.valueFunctionInit} value function  \
-                        and uniform distribution for policy initialization")
+        logger.info(f"Performing calculations for Prob 1: {config.task} with {config.valueFunctionInit} value function and uniform distribution for policy initialization")
         config.stepReward = -1
         config.goalReward = 0
         config.gamma = 0.9
@@ -543,8 +552,7 @@ def main():
         config.goalStates = [(0, 0), (3, 3)]
     elif config.problem == 2:
         # Prob 2
-        logger.info(f"Performing calculations for Prob 2: {config.task} with {config.valueFunctionInit} value function  \
-                        and uniform distribution for policy initialization")
+        logger.info(f"Performing calculations for Prob 2: {config.task} with {config.valueFunctionInit} value function and uniform distribution for policy initialization")
         config.stepReward = -4
         config.goalReward = -1
         config.gamma = 0.9
@@ -559,8 +567,7 @@ def main():
         config.goalStates = [(2, 2)]
     elif config.problem == 3:
         # Prob 3
-        logger.info(f"Performing calculations for Prob 3: {config.task} with {config.valueFunctionInit} value function  \
-                        and uniform distribution for policy initialization")
+        logger.info(f"Performing calculations for Prob 3: {config.task} with {config.valueFunctionInit} value function and uniform distribution for policy initialization")
         config.stepReward = -1
         config.goalReward = 0
         config.gamma = 0.9
@@ -575,8 +582,7 @@ def main():
         config.goalStates = [(2, 2)]
     elif config.problem == 4:
         # Prob 4
-        logger.info(f"Performing calculations for Prob 4: {config.task} with {config.valueFunctionInit} value function  \
-                        and uniform distribution for policy initialization")
+        logger.info(f"Performing calculations for Prob 4: {config.task} with {config.valueFunctionInit} value function and uniform distribution for policy initialization")
         config.stepReward = -1
         config.goalReward = 0
         config.gamma = 0.9
