@@ -260,6 +260,9 @@ class GridWorld:
                         break
             
             self.current_policy = self.new_policy.copy()
+            if config.plotTable:
+                temp_str = f"Values and action for each state after {count+1} policy improvement"
+                self.plotOptimalPolicy(self.currentV, self.current_policy, temp_str)
             
             if not policy_changed:
                 logger.info(f"Policy converged after {count+1} iterations")
@@ -274,8 +277,8 @@ class GridWorld:
         
         # Plot the value function and policy
         if config.plotTable:
-            self.plotValueFunction(self.currentV, "Final Value Function")
-            self.plotOptimalPolicy(self.currentV, self.current_policy, "Final Optimal Policy")
+            self.plotValueFunction(self.currentV, "Final Value Function after the algorithm is complete")
+            self.plotOptimalPolicy(self.currentV, self.current_policy, "Value each state after the policy evaluation is complete")
 
         return self.current_policy
 
@@ -340,8 +343,8 @@ class GridWorld:
 
         # Plot the value function and policy
         if config.plotTable:
-            self.plotValueFunction(self.currentV, "Final Value Function")
-            self.plotOptimalPolicy(self.currentV, optimal_policy, "Final Optimal Policy")
+            self.plotValueFunction(self.currentV, "Final Value Function after the algorithm is complete")
+            self.plotOptimalPolicy(self.currentV, optimal_policy, "Final Policy after the algorithm is complete")
 
         return optimal_policy
             
