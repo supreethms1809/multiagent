@@ -188,11 +188,11 @@ class GridWorld:
         # Policy improvement phase
         for state in self.states:
             if state in self.terminal_states:
+                for action in self.actions:
+                    self.current_policy[state][action] = 0
                 continue
+                
             n = self.getNextStates(state)
-            for action in self.actions:
-                self.current_policy[state][action] = 0 if state in self.terminal_states else self.current_policy[state][action]
-
             nextStatesVvalues = [self.currentV[n[action]] for action in self.actions]
             
             # Find the maximum value from the next states
@@ -209,7 +209,7 @@ class GridWorld:
             max_action = best_actions[0]
             
             for action in self.actions:
-                self.current_policy[state][action] = 0 if action != max_action else 1
+                self.current_policy[state][action] = 1 if action == max_action else 0
 
         return self.current_policy
 
@@ -231,14 +231,15 @@ class GridWorld:
                 oldV = self.currentV.copy()
                 newV = self.calculateValueFunction()
                 
+                # Update currentV before checking convergence
+                self.currentV = self.newV.copy()
+                
                 # Check convergence of value function
-                currentVnp = np.array(list(self.currentV.values()))
-                newVnp = np.array(list(self.newV.values()))
+                currentVnp = np.array(list(oldV.values()))
+                newVnp = np.array(list(self.currentV.values()))
                 if np.allclose(currentVnp, newVnp, atol=0.0001):
                     logger.info(f"Value function converged after {iter+1} evaluation iterations")
                     break
-                    
-                self.currentV = self.newV.copy()
 
             # Plot the value function after policy evaluation
             if config.plotTable:

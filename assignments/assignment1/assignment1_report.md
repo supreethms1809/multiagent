@@ -65,7 +65,7 @@ python assignment1_main.py --problem 4
 - The terminal states are (0,0) --> 0 and (3,3) --> 15.
 - Reward for going to the terminal state 0.
 
-## Problem 1
+## Problem 1 - Policy Iteration
 - Policy iteration
 - Policy is uniform distribution policy
 - every step generates reward -1
@@ -98,7 +98,7 @@ Run `python assignment1_main.py --problem 1`
 ![Value and action of each state after the policy evaluation is complete](./images/prob1.png)
 
 
-## Problem 2
+## Problem 2 - Policy Iteration
 - Policy iteration
 - Policy is uniform distribution policy
 - every step generates reward -4
@@ -129,7 +129,7 @@ Run `python assignment1_main.py --problem 2`
 ![Value and action of each state after the policy evaluation is complete](./images/prob2.png)
 
 
-## Problem 3
+## Problem 3 - Policy Iteration
 - Policy iteration
 - Policy is uniform distribution policy
 - every step generates reward -4
@@ -166,7 +166,7 @@ Run `python assignment1_main.py --problem 3`
 ### Value and action of each state after the 3rd policy improvement
 ![Value and action of each state after the 3rd policy improvement](./images/prob3c.png)
 
-## Problem 4
+## Problem 4 - Value Iteration
 - Value iteration
 - every step generates reward -4
 - Goal reward -1
