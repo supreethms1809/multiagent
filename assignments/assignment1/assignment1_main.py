@@ -242,6 +242,8 @@ class GridWorld:
 
             # Plot the value function after policy evaluation
             if config.plotTable:
+                temp_str = f"Values for each state after policy evaluation is complete"
+                self.plotValueFunction(self.currentV, temp_str)
                 VList.append(self.currentV)
             
             #### Policy improvement ####
