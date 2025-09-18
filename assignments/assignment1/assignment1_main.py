@@ -571,8 +571,8 @@ def main():
     elif config.problem == 3:
         # Prob 3
         logger.info(f"Performing calculations for Prob 3: {config.task} with {config.valueFunctionInit} value function and uniform distribution for policy initialization")
-        config.stepReward = -1
-        config.goalReward = 0
+        config.stepReward = -4
+        config.goalReward = -1
         config.gamma = 0.9
         config.epsilon = 1e-6
         config.max_iterations = 150
@@ -586,8 +586,8 @@ def main():
     elif config.problem == 4:
         # Prob 4
         logger.info(f"Performing calculations for Prob 4: {config.task} with {config.valueFunctionInit} value function and uniform distribution for policy initialization")
-        config.stepReward = -1
-        config.goalReward = 0
+        config.stepReward = -4
+        config.goalReward = -1
         config.gamma = 0.9
         config.epsilon = 1e-6
         config.max_iterations = 150

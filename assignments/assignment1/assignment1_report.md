@@ -66,27 +66,95 @@ python assignment1_main.py --problem 4
 - Reward for going to the terminal state 0.
 
 ## Problem 1
+- Policy iteration
 - Policy is uniform distribution policy
 - every step generates reward -1
+- Goal reward 0
 - gamma $\gamma=0.9$
+- Goal state (0,0) and (3,3)
 - Evaluate the policy iteratively
 - Plot the value of each state after the policy evaluation is complete(One plot)
 - Tips: 1. run more than 150 iterations. 2. set the convergence threshold less than 1e-6
 
+
 Run `python assignment1_main.py --problem 1`
+```Python
+# Problem 1 sets the following options
+#config.stepReward = -1
+#config.goalReward = 0
+#config.gamma = 0.9
+#config.epsilon = 1e-6
+#config.max_iterations = 150
+#config.grid_size = 4
+#config.valueFunctionInit = "V"
+#config.randomValueFunctionInit = False
+#config.randomPolicyInit = False
+#config.task = "policy_iteration"
+#config.plotTable = True
+#config.goalStates = [(0, 0), (3, 3)]
+```
+
 ### Value and action of each state after the policy evaluation is complete 
 ![Value and action of each state after the policy evaluation is complete](./images/prob1.png)
 
 
 ## Problem 2
-Run `python assignment1_main.py --problem 2`
+- Policy iteration
+- Policy is uniform distribution policy
+- every step generates reward -4
+- Goal reward -1
+- gamma $\gamma=0.9$
+- Goal state (2,2) --> state 10
+- Evaluate the policy iteratively
+- Plot the value of each state after the policy evaluation is complete(One plot)
 
+
+Run `python assignment1_main.py --problem 2`
+```Python
+# Problem 2 sets the following options
+# config.stepReward = -4
+# config.goalReward = -1
+# config.gamma = 0.9
+# config.epsilon = 1e-6
+# config.max_iterations = 150
+# config.grid_size = 4
+# config.valueFunctionInit = "V"
+# config.randomValueFunctionInit = False
+# config.randomPolicyInit = False
+# config.task = "policy_iteration"
+# config.plotTable = True
+# config.goalStates = [(2, 2)]
+```
 ### Value and action of each state after the policy evaluation is complete
 ![Value and action of each state after the policy evaluation is complete](./images/prob2.png)
 
 
 ## Problem 3
+- Policy iteration
+- Policy is uniform distribution policy
+- every step generates reward -4
+- Goal reward -1
+- gamma $\gamma=0.9$
+- Goal state (2,2) --> state 10
+- Evaluate the policy iteratively
+
+
 Run `python assignment1_main.py --problem 3`
+```Python
+# Problem 3 sets the following options
+# config.stepReward = -4
+# config.goalReward = -1
+# config.gamma = 0.9
+# config.epsilon = 1e-6
+# config.max_iterations = 150
+# config.grid_size = 4
+# config.valueFunctionInit = "V"
+# config.randomValueFunctionInit = False
+# config.randomPolicyInit = False
+# config.task = "policy_iteration"
+# config.plotTable = True
+# config.goalStates = [(2, 2)]
+```
 ### Value and action of each state after the 1st policy improvement
 ![Value and action of each state after the 1st policy improvement](./images/prob3a.png)
 
@@ -99,7 +167,29 @@ Run `python assignment1_main.py --problem 3`
 ![Value and action of each state after the 3rd policy improvement](./images/prob3c.png)
 
 ## Problem 4
+- Value iteration
+- every step generates reward -4
+- Goal reward -1
+- gamma $\gamma=0.9$
+- Goal state (2,2) --> state 10
+
+
 Run `python assignment1_main.py --problem 4`
+```Python
+# Problem 4 sets the following options
+# config.stepReward = -4
+# config.goalReward = -1
+# config.gamma = 0.9
+# config.epsilon = 1e-6
+# config.max_iterations = 150
+# config.grid_size = 4
+# config.valueFunctionInit = "V"
+# config.randomValueFunctionInit = False
+# config.randomPolicyInit = False
+# config.task = "value_iteration"
+# config.plotTable = True
+# config.goalStates = [(2, 2)]
+```
 ### Value after the algorithm is complete
 ![Value after the algorithm is complete](./images/prob4a.png)
 
