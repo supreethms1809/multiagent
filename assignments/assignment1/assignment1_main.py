@@ -21,7 +21,7 @@ usage: python assignment1_main.py [-h] [--task {policy_iteration,value_iteration
     --goalReward GOALREWARD                 Goal reward
     --valueFunctionInit {V,Q}               Type of value function used V or Q
     --randomValueFunctionInit               Initialize the value function with random values
-    --randomPolicyInit                      Initialize the policy with random values
+    --uniformPolicyInit                     Initialize the policy with uniform distribution
     --problem {1,2,3,4}                     Problem number
     --plotTable                             Plot the value function and policy
     --goalStates GOALSTATES                   Goal states list. Format list of tuples [(x, y), (x, y), ...]
@@ -38,9 +38,9 @@ python assignment1_main.py \\
     --stepReward -1 \\
     --goalReward 0 \\
     --valueFunctionInit V \\
-    --randomValueFunctionInit False \\
-    --randomPolicyInit False \\
-    --plotTable True \\
+    --randomValueFunctionInit \\
+    --uniformPolicyInit \\
+    --plotTable \\
     --goalStates [(0, 0), (3, 3)] \\
     --splStates [(2, 2)] \\
     --splReward -1
@@ -121,7 +121,7 @@ class GridWorld:
     
     ##### Initialize Policy #####
     def initializePolicy(self, config):
-        if config.randomPolicyInit:
+        if not config.uniformPolicyInit:
             logger.info("Using random policy initialization")
             self.current_policy = {state: {action: random.random() for action in self.actions} for state in self.states}
             for state in self.terminal_states:
@@ -380,7 +380,7 @@ class GridWorld:
         # Plot the value function and policy after the algorithm is complete (For problem 4)
         if config.plotTable and config.problem == 4:
             self.plotValueFunction(self.currentV, "Final Value Function after the algorithm is complete", config.problem)
-            self.plotOptimalPolicy(self.currentV, optimal_policy, "Final Policy (constructed from value function) after the algorithm is complete", config.problem, None)
+            self.plotOptimalPolicy(self.currentV, optimal_policy, "Final optimal policy after the algorithm is complete", config.problem, None)
 
         return optimal_policy
 
@@ -638,7 +638,7 @@ def main():
     parser.add_argument("--goalReward", type=int, default=0, help="Goal reward")
     parser.add_argument("--valueFunctionInit", type=str, default="V", choices=["V", "Q"], help="Type of value function used V or Q")
     parser.add_argument("--randomValueFunctionInit", action="store_true", help="Randomly initialize the value function")
-    parser.add_argument("--randomPolicyInit", action="store_false", help="Randomly initialize the policy")
+    parser.add_argument("--uniformPolicyInit", action="store_true", help="Initialize the policy with uniform distribution")
     parser.add_argument("--problem", type=int, required=False, choices=[1, 2, 3 ,4], help="Problem number")
     parser.add_argument("--plotTable", action="store_true", help="Plot the value function and policy")
     parser.add_argument("--goalStates", type=tuple, default=[(0, 0), (3, 3)], help="Goal states list. Format list of tuples [(x, y), (x, y), ...]")
@@ -657,7 +657,7 @@ def main():
         config.grid_size = 4
         config.valueFunctionInit = "V"
         config.randomValueFunctionInit = True
-        config.randomPolicyInit = False
+        config.uniformPolicyInit = True
         config.task = "policy_iteration"
         config.plotTable = True
         config.goalStates = [(0, 0), (3, 3)]
@@ -674,7 +674,7 @@ def main():
         config.grid_size = 4
         config.valueFunctionInit = "V"
         config.randomValueFunctionInit = True
-        config.randomPolicyInit = False
+        config.uniformPolicyInit = True
         config.task = "policy_iteration"
         config.plotTable = True
         config.goalStates = [(0, 0), (3, 3)]
@@ -691,7 +691,7 @@ def main():
         config.grid_size = 4
         config.valueFunctionInit = "V"
         config.randomValueFunctionInit = True
-        config.randomPolicyInit = False
+        config.uniformPolicyInit = True
         config.task = "policy_iteration"
         config.plotTable = True
         config.goalStates = [(0, 0), (3, 3)]
@@ -708,7 +708,7 @@ def main():
         config.grid_size = 4
         config.valueFunctionInit = "V"
         config.randomValueFunctionInit = True
-        config.randomPolicyInit = False
+        config.uniformPolicyInit = True
         config.task = "value_iteration"
         config.plotTable = True
         config.goalStates = [(0, 0), (3, 3)]

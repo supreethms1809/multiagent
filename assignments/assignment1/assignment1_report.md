@@ -12,8 +12,8 @@ The code is located on Github [https://github.com/supreethms1809/multiagent.git]
 python assignment1_main.py [-h] [--task {policy_iteration,value_iteration}] \\
     [--gamma GAMMA] [--epsilon EPSILON] [--max_iterations MAX_ITERATIONS] \\
     [--grid_size grid_size] [--stepReward STEPREWARD] [--goalReward GOALREWARD] \\
-    [--valueFunctionInit {V,Q}] [--randomValueFunctionInit] [--randomPolicyInit] \\
-    [--problem {1,2,3,4}] [--plotTable] [--goalStates GOALSTATES]
+    [--valueFunctionInit {V,Q}] [--randomValueFunctionInit] [--uniformPolicyInit] \\
+    [--problem {1,2,3,4}] [--plotTable] [--goalStates GOALSTATES] [--splStates SPECIALSTATES] [--splReward SPLREWARD]
 
     options:
     -h, --help            show this help message and exit
@@ -26,12 +26,12 @@ python assignment1_main.py [-h] [--task {policy_iteration,value_iteration}] \\
     --goalReward GOALREWARD                 Goal reward
     --valueFunctionInit {V,Q}               Type of value function used V or Q
     --randomValueFunctionInit               Initialize the value function with random values
-    --randomPolicyInit                      Initialize the policy with random values
+    --uniformPolicyInit                     Initialize the policy with uniform distribution
     --problem {1,2,3,4}                     Problem number
     --plotTable                             Plot the value function and policy
     --goalStates GOALSTATES                 Goal states list. Format list of tuples [(x, y), (x, y), ...]
-    --splStates                             Spl states list. Format list of tuples [(x, y), (x, y), ...]
-    --splReward                             Special state reward 
+    --splStates SPECIALSTATES               Spl states list. Format list of tuples [(x, y), (x, y), ...]
+    --splReward SPLREWARD                   Special state reward 
 ```
 The configurations for the four problems given in the assignment is hardcoded in the source code for convinience.
 Alternatively, you can also pass the configurations as the command line options. The usage is shown above.
@@ -49,7 +49,7 @@ python assignment1_main.py --problem 1
 # config.grid_size = 4
 # config.valueFunctionInit = "V"
 # config.randomValueFunctionInit = False
-# config.randomPolicyInit = False
+# config.uniformPolicyInit = True
 # config.task = "policy_iteration"
 # config.plotTable = True
 # config.goalStates = [(0, 0), (3, 3)]
@@ -100,16 +100,29 @@ Run `python assignment1_main.py --problem 1`
 # config.goalReward = 0
 # config.gamma = 0.9
 # config.epsilon = 1e-6
-# config.max_iterations = 150
+# config.max_iterations = 200
 # config.grid_size = 4
 # config.valueFunctionInit = "V"
-# config.randomValueFunctionInit = False
-# config.randomPolicyInit = False
+# config.randomValueFunctionInit = True
+# config.uniformPolicyInit = True
 # config.task = "policy_iteration"
 # config.plotTable = True
 # config.goalStates = [(0, 0), (3, 3)]
 # config.splStates = None
 # config.splReward = None
+```
+Running problem 1
+```bash
+INFO:__main__:Performing calculations for Prob 1: policy_iteration with V value function and uniform distribution for policy initialization
+INFO:__main__:Using V value function with random initialization
+INFO:__main__:Using uniform policy initialization
+INFO:__main__:Starting policy iteration with 200 max iterations
+INFO:__main__:Value function converged after 62 evaluation iterations
+INFO:__main__:Plotting value function
+INFO:__main__:Value function converged after 4 evaluation iterations
+INFO:__main__:Value function converged after 1 evaluation iterations
+INFO:__main__:Policy converged after 3 iterations
+INFO:__main__:Policy iteration converged successfully
 ```
 
 ### Value and action of each state after the policy evaluation is complete 
@@ -133,20 +146,35 @@ Run `python assignment1_main.py --problem 2`
 ```Python
 # Problem 2 sets the following options
 # config.stepReward = -4
-# config.goalReward = -1
+# config.goalReward = 0
 # config.gamma = 0.9
 # config.epsilon = 1e-6
-# config.max_iterations = 150
+# config.max_iterations = 200
 # config.grid_size = 4
 # config.valueFunctionInit = "V"
-# config.randomValueFunctionInit = False
-# config.randomPolicyInit = False
+# config.randomValueFunctionInit = True
+# config.uniformPolicyInit = True
 # config.task = "policy_iteration"
 # config.plotTable = True
-# config.goalStates = [(2, 2)]
+# config.goalStates = [(0, 0), (3, 3)]
 # config.splStates = [(2,2)]
 # config.splReward = -1
 ```
+Running problem 2
+```bash
+INFO:__main__:Performing calculations for Prob 2: policy_iteration with V value function and uniform distribution for policy initialization
+INFO:__main__:Using V value function with random initialization
+INFO:__main__:Using uniform policy initialization
+INFO:__main__:Starting policy iteration with 200 max iterations
+INFO:__main__:Value function converged after 62 evaluation iterations
+INFO:__main__:Plotting value function
+INFO:__main__:Value function converged after 4 evaluation iterations
+INFO:__main__:Value function converged after 1 evaluation iterations
+INFO:__main__:Policy converged after 3 iterations
+INFO:__main__:Policy iteration converged successfully
+```
+
+
 ### Value and action of each state after the policy evaluation is complete
 ![Value and action of each state after the policy evaluation is complete](./images/prob2.png)
 
@@ -167,20 +195,38 @@ Run `python assignment1_main.py --problem 3`
 ```Python
 # Problem 3 sets the following options
 # config.stepReward = -4
-# config.goalReward = -1
+# config.goalReward = 0
 # config.gamma = 0.9
 # config.epsilon = 1e-6
-# config.max_iterations = 150
+# config.max_iterations = 200
 # config.grid_size = 4
 # config.valueFunctionInit = "V"
-# config.randomValueFunctionInit = False
-# config.randomPolicyInit = False
+# config.randomValueFunctionInit = True
+# config.uniformPolicyInit = True
 # config.task = "policy_iteration"
 # config.plotTable = True
-# config.goalStates = [(2, 2)]
+# config.goalStates = [(0, 0), (3, 3)]
 # config.splStates = [(2,2)]
 # config.splReward = -1
 ```
+Running problem 3
+```bash
+INFO:__main__:Performing calculations for Prob 3: policy_iteration with V value function and uniform distribution for policy initialization
+INFO:__main__:Using V value function with random initialization
+INFO:__main__:Using uniform policy initialization
+INFO:__main__:Starting policy iteration with 200 max iterations
+INFO:__main__:Value function converged after 62 evaluation iterations
+INFO:__main__:Plotting optimal policy with values and actions
+INFO:__main__:Value function converged after 4 evaluation iterations
+INFO:__main__:Plotting optimal policy with values and actions
+INFO:__main__:Value function converged after 1 evaluation iterations
+INFO:__main__:Plotting optimal policy with values and actions
+INFO:__main__:Policy converged after 3 iterations
+INFO:__main__:Policy iteration converged successfully
+INFO:__main__:Plotting value function
+INFO:__main__:Plotting optimal policy with values and actions
+```
+
 ### Value and action of each state after the 1st policy improvement
 ![Value and action of each state after the 1st policy improvement](./images/prob31.png)
 
@@ -215,19 +261,28 @@ Run `python assignment1_main.py --problem 4`
 ```Python
 # Problem 4 sets the following options
 # config.stepReward = -4
-# config.goalReward = -1
+# config.goalReward = 0
 # config.gamma = 0.9
 # config.epsilon = 1e-6
-# config.max_iterations = 150
+# config.max_iterations = 200
 # config.grid_size = 4
 # config.valueFunctionInit = "V"
-# config.randomValueFunctionInit = False
-# config.randomPolicyInit = False
+# config.randomValueFunctionInit = True
+# config.uniformPolicyInit = True
 # config.task = "value_iteration"
 # config.plotTable = True
-# config.goalStates = [(2, 2)]
+# config.goalStates = [(0, 0), (3, 3)]
 # config.splStates = [(2,2)]
 # config.splReward = -1
+```
+Running problem 4
+```bash
+INFO:__main__:Performing calculations for Prob 4: policy_iteration with V value function and uniform distribution for policy initialization
+INFO:__main__:Using V value function with random initialization
+INFO:__main__:Value iteration converged after 4 iterations
+INFO:__main__:Value iteration converged successfully
+INFO:__main__:Plotting value function
+INFO:__main__:Plotting optimal policy with values and actions
 ```
 ### Value after the algorithm is complete
 ![Value after the algorithm is complete](./images/prob4.png)
