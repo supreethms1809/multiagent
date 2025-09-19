@@ -29,7 +29,9 @@ python assignment1_main.py [-h] [--task {policy_iteration,value_iteration}] \\
     --randomPolicyInit                      Initialize the policy with random values
     --problem {1,2,3,4}                     Problem number
     --plotTable                             Plot the value function and policy
-    --goalStates GOALSTATES                   Goal states list. Format list of tuples [(x, y), (x, y), ...]
+    --goalStates GOALSTATES                 Goal states list. Format list of tuples [(x, y), (x, y), ...]
+    --splStates                             Spl states list. Format list of tuples [(x, y), (x, y), ...]
+    --splReward                             Special state reward 
 ```
 The configurations for the four problems given in the assignment is hardcoded in the source code for convinience.
 Alternatively, you can also pass the configurations as the command line options. The usage is shown above.
@@ -39,18 +41,20 @@ To run problem 1 use
 python assignment1_main.py --problem 1
 
 # Problem 1 sets the following options
-#config.stepReward = -1
-#config.goalReward = 0
-#config.gamma = 0.9
-#config.epsilon = 1e-6
-#config.max_iterations = 150
-#config.grid_size = 4
-#config.valueFunctionInit = "V"
-#config.randomValueFunctionInit = False
-#config.randomPolicyInit = False
-#config.task = "policy_iteration"
-#config.plotTable = True
-#config.goalStates = [(0, 0), (3, 3)]
+# config.stepReward = -1
+# config.goalReward = 0
+# config.gamma = 0.9
+# config.epsilon = 1e-6
+# config.max_iterations = 150
+# config.grid_size = 4
+# config.valueFunctionInit = "V"
+# config.randomValueFunctionInit = False
+# config.randomPolicyInit = False
+# config.task = "policy_iteration"
+# config.plotTable = True
+# config.goalStates = [(0, 0), (3, 3)]
+# config.splStates = None
+# config.splReward = None
 ```
 
 To run problem 2,3,4
@@ -76,22 +80,36 @@ python assignment1_main.py --problem 4
 - Plot the value of each state after the policy evaluation is complete(One plot)
 - Tips: 1. run more than 150 iterations. 2. set the convergence threshold less than 1e-6
 
+Policy iteration consists of two parts. First is the policy evaluation and the policy improvement.
+In this phase, we calculate the value function using the Bellman expectation equation under the current policy
+
+$V^\pi(s) = \sum_{a} \pi(a|s) \sum_{s'} P(s'|s,a)\big[ R(s,a,s') + \gamma V^\pi(s') \big]$
+
+We run this update for all states until the values converge (i.e., they stop changing between successive iterations) or until a maximum number of iterations is reached. During this process, the policy remains fixed.
+
+Once we have an updated value function, we improve the policy by making it greedy with respect to the current value estimates:
+
+$ \pi'(s) = \arg\max_a \sum_{s'} P(s'|s,a)\big[ R(s,a,s') + \gamma V^\pi(s') \big] $
+
+If the policy changes, we repeat the evaluation and improvement steps. If the policy remains unchanged (i.e., stable), then we have reached convergence.
 
 Run `python assignment1_main.py --problem 1`
 ```Python
 # Problem 1 sets the following options
-#config.stepReward = -1
-#config.goalReward = 0
-#config.gamma = 0.9
-#config.epsilon = 1e-6
-#config.max_iterations = 150
-#config.grid_size = 4
-#config.valueFunctionInit = "V"
-#config.randomValueFunctionInit = False
-#config.randomPolicyInit = False
-#config.task = "policy_iteration"
-#config.plotTable = True
-#config.goalStates = [(0, 0), (3, 3)]
+# config.stepReward = -1
+# config.goalReward = 0
+# config.gamma = 0.9
+# config.epsilon = 1e-6
+# config.max_iterations = 150
+# config.grid_size = 4
+# config.valueFunctionInit = "V"
+# config.randomValueFunctionInit = False
+# config.randomPolicyInit = False
+# config.task = "policy_iteration"
+# config.plotTable = True
+# config.goalStates = [(0, 0), (3, 3)]
+# config.splStates = None
+# config.splReward = None
 ```
 
 ### Value and action of each state after the policy evaluation is complete 
@@ -102,9 +120,11 @@ Run `python assignment1_main.py --problem 1`
 - Policy iteration
 - Policy is uniform distribution policy
 - every step generates reward -4
-- Goal reward -1
+- Goal state reward 0
 - gamma $\gamma=0.9$
-- Goal state (2,2) --> state 10
+- Special state reward -1
+- Special state (2,2) --> state 10
+- Goal state (0,0) and (3,3)
 - Evaluate the policy iteratively
 - Plot the value of each state after the policy evaluation is complete(One plot)
 
@@ -124,6 +144,8 @@ Run `python assignment1_main.py --problem 2`
 # config.task = "policy_iteration"
 # config.plotTable = True
 # config.goalStates = [(2, 2)]
+# config.splStates = [(2,2)]
+# config.splReward = -1
 ```
 ### Value and action of each state after the policy evaluation is complete
 ![Value and action of each state after the policy evaluation is complete](./images/prob2.png)
@@ -133,9 +155,11 @@ Run `python assignment1_main.py --problem 2`
 - Policy iteration
 - Policy is uniform distribution policy
 - every step generates reward -4
-- Goal reward -1
+- Goal state reward 0
 - gamma $\gamma=0.9$
-- Goal state (2,2) --> state 10
+- Special state reward -1
+- Special state (2,2) --> state 10
+- Goal state (0,0) and (3,3)
 - Evaluate the policy iteratively
 
 
@@ -154,25 +178,38 @@ Run `python assignment1_main.py --problem 3`
 # config.task = "policy_iteration"
 # config.plotTable = True
 # config.goalStates = [(2, 2)]
+# config.splStates = [(2,2)]
+# config.splReward = -1
 ```
 ### Value and action of each state after the 1st policy improvement
-![Value and action of each state after the 1st policy improvement](./images/prob3a.png)
+![Value and action of each state after the 1st policy improvement](./images/prob31.png)
 
 
 ### Value and action of each state after the 2nd policy improvement
-![Value and action of each state after the 2nd policy improvement](./images/prob3b.png)
+![Value and action of each state after the 2nd policy improvement](./images/prob32.png)
 
 
 ### Value and action of each state after the 3rd policy improvement
-![Value and action of each state after the 3rd policy improvement](./images/prob3c.png)
+![Value and action of each state after the 3rd policy improvement](./images/prob33.png)
+
+### Final Optimal policy
+![Final optimal policy](./images/prob3None.png)
 
 ## Problem 4 - Value Iteration
 - Value iteration
 - every step generates reward -4
-- Goal reward -1
+- Goal state reward 0
 - gamma $\gamma=0.9$
-- Goal state (2,2) --> state 10
+- Special state reward -1
+- Special state (2,2) --> state 10
+- Goal state (0,0) and (3,3)
+- Run value iteration and generate a policy based on the values
 
+Here we are using value iteration. Value iteration has only one update. we directly update the value function using the Bellman optimality equation.
+
+$V_{k+1}(s) = \max_a \sum_{s'} P(s'|s,a)\big[ R(s,a,s') + \gamma V_k(s') \big]$
+
+We repeat this update across all states until the value function converges (the difference between successive iterations is below some threshold $\epsilon$)
 
 Run `python assignment1_main.py --problem 4`
 ```Python
@@ -189,11 +226,13 @@ Run `python assignment1_main.py --problem 4`
 # config.task = "value_iteration"
 # config.plotTable = True
 # config.goalStates = [(2, 2)]
+# config.splStates = [(2,2)]
+# config.splReward = -1
 ```
 ### Value after the algorithm is complete
-![Value after the algorithm is complete](./images/prob4a.png)
+![Value after the algorithm is complete](./images/prob4.png)
 
 
 ### Policy after the algorithm is complete 
-![Policy after the algorithm is complete](./images/prob4b.png)
+![Policy after the algorithm is complete](./images/prob4None.png)
 
