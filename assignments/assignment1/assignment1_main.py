@@ -103,9 +103,13 @@ class GridWorld:
             logger.info("Using V value function with random initialization")
             if config.valueFunctionInit == "V":
                 self.currentV = {state: np.random.rand() for state in self.states}
+                for state in self.terminal_states:
+                    self.currentV[state] = 0
             elif config.valueFunctionInit == "Q":
                 logger.info("Using Q value function with random initialization")
                 self.currentQ = {state: {action: np.random.rand() for action in self.actions} for state in self.states}
+                for state in self.terminal_states:
+                    self.currentQ[state] = {action: 0 for action in self.actions}
         else:
             if config.valueFunctionInit == "V":
                 logger.info("Using V value function and initializing to 0")
@@ -177,7 +181,7 @@ class GridWorld:
             done = False
             reward = self.reward
 
-        logger.info(f"State: {current_state}, Action: {action}, Next State: {nextState}, Reward: {reward}, Done: {done}")
+        #logger.info(f"State: {current_state}, Action: {action}, Next State: {nextState}, Reward: {reward}, Done: {done}")
             
         return current_state, action, nextState, reward, done
 
@@ -208,21 +212,21 @@ class GridWorld:
                     self.current_policy[state][action] = 0
                 continue
                 
-            # Calculate Q-value for each action and find the best one
-            max_q_value = float('-inf')
+            # Calculate V-value for each action and find the best one
+            max_v_value = float('-inf')
             best_actions = []
             
             for action in self.actions:
                 _, _, nextState, reward, _ = self.step(state, action)
-                q_value = reward + self.gamma * self.currentV[nextState]
+                v_value = reward + self.gamma * self.currentV[nextState]
                 
-                if q_value > max_q_value:
-                    max_q_value = q_value
+                if v_value > max_v_value:
+                    max_v_value = v_value
                     best_actions = [action]
-                elif q_value == max_q_value:
+                elif v_value == max_v_value:
                     best_actions.append(action)
             
-            # If multiple actions have the same Q-value, prefer terminal states
+            # If multiple actions have the same V-value, prefer terminal states
             if len(best_actions) > 1:
                 terminal_actions = [a for a in best_actions if self.getNextStates(state)[a] in self.terminal_states]
                 if terminal_actions:
@@ -237,7 +241,7 @@ class GridWorld:
 
     ##### Policy Iteration #####
     def policyIterationV(self, config):
-        # Initialize the value function and policy
+        # Initialize the value function and policy. We initialize the value function and policy here.
         self.initializeValueFunction(config)
         self.initializePolicy(config)
         self.newV = self.currentV.copy()
@@ -245,7 +249,7 @@ class GridWorld:
         
         logger.info(f"Starting policy iteration with {config.max_iterations} max iterations")
         count = 0
-        VList = []
+
         while not converged:
             #logger.info(f"Iteration {i+1}")
             #### Policy evaluation ####
@@ -254,12 +258,12 @@ class GridWorld:
                 newV = self.PolicyEvaluationcalculateValueFunction()
                 
                 # Update currentV before checking convergence
-                self.currentV = self.newV.copy()
+                self.currentV = newV.copy()
                 
                 # Check convergence of value function
                 currentVnp = np.array(list(oldV.values()))
                 newVnp = np.array(list(self.currentV.values()))
-                if np.allclose(currentVnp, newVnp, atol=0.0001):
+                if np.allclose(currentVnp, newVnp, atol=config.epsilon):
                     logger.info(f"Value function converged after {iter+1} evaluation iterations")
                     break
 
@@ -267,7 +271,6 @@ class GridWorld:
             if config.plotTable and count == 0 and (config.problem == 2 or config.problem == 1):
                 temp_str = f"Values for each state after policy evaluation is complete"
                 self.plotValueFunction(self.currentV, temp_str, config.problem)
-                VList.append(self.currentV)
             
             #### Policy improvement ####
             old_policy = {state: policy.copy() for state, policy in self.current_policy.items()}
@@ -278,7 +281,7 @@ class GridWorld:
             for state in self.states:
                 if state not in self.terminal_states:
                     for action in self.actions:
-                        if abs(old_policy[state][action] - self.new_policy[state][action]) > 1e-6:
+                        if abs(old_policy[state][action] - self.new_policy[state][action]) > config.epsilon:
                             policy_changed = True
                             break
                     if policy_changed:
@@ -316,21 +319,21 @@ class GridWorld:
             if state in self.terminal_states:
                 continue
                 
-            # Calculate Q-value for each action and find the best one
-            max_q_value = float('-inf')
+            # Calculate V-value for each action and find the best one
+            max_v_value = float('-inf')
             best_actions = []
             
             for action in self.actions:
                 _, _, nextState, reward, _ = self.step(state, action)
-                q_value = reward + self.gamma * self.currentV[nextState]
+                v_value = reward + self.gamma * self.currentV[nextState]
                 
-                if q_value > max_q_value:
-                    max_q_value = q_value
+                if v_value > max_v_value:
+                    max_v_value = v_value
                     best_actions = [action]
-                elif q_value == max_q_value:
+                elif v_value == max_v_value:
                     best_actions.append(action)
             
-            # If multiple actions have the same Q-value, prefer terminal states
+            # If multiple actions have the same V-value, prefer terminal states
             if len(best_actions) > 1:
                 terminal_actions = [a for a in best_actions if self.getNextStates(state)[a] in self.terminal_states]
                 if terminal_actions:
@@ -343,10 +346,10 @@ class GridWorld:
 
     ##### Value Iteration #####
     def valueIterationV(self, config):
-        # Initialize the value function
+        # Initialize the value function. We only initialize the value function here.
         self.initializeValueFunction(config)
         converged = False
-        VList = []
+        
         for iter in range(config.max_iterations):
             delta = 0
             for state in self.states:
@@ -653,7 +656,7 @@ def main():
         config.max_iterations = 200
         config.grid_size = 4
         config.valueFunctionInit = "V"
-        config.randomValueFunctionInit = False
+        config.randomValueFunctionInit = True
         config.randomPolicyInit = False
         config.task = "policy_iteration"
         config.plotTable = True
@@ -670,7 +673,7 @@ def main():
         config.max_iterations = 200
         config.grid_size = 4
         config.valueFunctionInit = "V"
-        config.randomValueFunctionInit = False
+        config.randomValueFunctionInit = True
         config.randomPolicyInit = False
         config.task = "policy_iteration"
         config.plotTable = True
@@ -687,7 +690,7 @@ def main():
         config.max_iterations = 200
         config.grid_size = 4
         config.valueFunctionInit = "V"
-        config.randomValueFunctionInit = False
+        config.randomValueFunctionInit = True
         config.randomPolicyInit = False
         config.task = "policy_iteration"
         config.plotTable = True
@@ -704,7 +707,7 @@ def main():
         config.max_iterations = 200
         config.grid_size = 4
         config.valueFunctionInit = "V"
-        config.randomValueFunctionInit = False
+        config.randomValueFunctionInit = True
         config.randomPolicyInit = False
         config.task = "value_iteration"
         config.plotTable = True
