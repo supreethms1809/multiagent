@@ -455,7 +455,7 @@ class GridWorld:
             display_grid.append(display_row)
         
         # Create the plot
-        fig, ax = plt.subplots(figsize=(8, 8))
+        fig, ax = plt.subplots(figsize=(6.8, 6.8))
         
         # Create table
         table = ax.table(cellText=display_grid, 
@@ -510,7 +510,7 @@ class GridWorld:
         
         plt.tight_layout()
 
-        plt.savefig(f"images/prob{problem}{count}.png")
+        plt.savefig(f"images/prob{problem}{count}.png", dpi=100, bbox_inches='tight')
         plt.show()
         plt.close()
 
@@ -549,7 +549,7 @@ class GridWorld:
             display_grid.append(display_row)
         
         # Create the plot
-        fig, ax = plt.subplots(figsize=(8, 8))
+        fig, ax = plt.subplots(figsize=(6.8, 6.8))
         
         # Create table
         table = ax.table(cellText=display_grid, 
@@ -621,7 +621,7 @@ class GridWorld:
         ax.legend(handles=legend_elements, loc='upper right', bbox_to_anchor=(1.1, 1))
         
         plt.tight_layout()
-        plt.savefig(f"images/prob{problem}.png")
+        plt.savefig(f"images/prob{problem}.png", dpi=100, bbox_inches='tight')
         plt.show()
         plt.close()
 

@@ -9,28 +9,46 @@ Course: AI for Multiagent system
 The code is located on Github [https://github.com/supreethms1809/multiagent.git](https://github.com/supreethms1809/multiagent.git).
 
 ```Python
-python assignment1_main.py [-h] [--task {policy_iteration,value_iteration}] \\
-    [--gamma GAMMA] [--epsilon EPSILON] [--max_iterations MAX_ITERATIONS] \\
-    [--grid_size grid_size] [--stepReward STEPREWARD] [--goalReward GOALREWARD] \\
-    [--valueFunctionInit {V,Q}] [--randomValueFunctionInit] [--uniformPolicyInit] \\
-    [--problem {1,2,3,4}] [--plotTable] [--goalStates GOALSTATES] [--splStates SPECIALSTATES] [--splReward SPLREWARD]
+python assignment1_main.py [-h] \\
+    [--task {policy_iteration,value_iteration}] \\
+    [--gamma GAMMA] [--epsilon EPSILON] \\
+    [--max_iterations MAX_ITERATIONS] \\
+    [--grid_size grid_size] [--stepReward STEPREWARD] \\
+    [--goalReward GOALREWARD] \\
+    [--valueFunctionInit {V,Q}] \\
+    [--randomValueFunctionInit] \\
+    [--uniformPolicyInit] \\
+    [--problem {1,2,3,4}] [--plotTable] \\
+    [--goalStates GOALSTATES] \\
+    [--splStates SPECIALSTATES] \\
+    [--splReward SPLREWARD]
 
     options:
     -h, --help            show this help message and exit
     --task {policy_iteration,value_iteration}
     --gamma GAMMA                           Gamma for the value iteration
     --epsilon EPSILON                       Epsilon for the value iteration
-    --max_iterations MAX_ITERATIONS         Maximum number of iterations for the value iteration and policy iteration
+    --max_iterations MAX_ITERATIONS         Maximum number of iterations
+                                            for the value iteration and 
+                                            policy iteration
     --grid_size grid_size                   Size of the grid N
     --stepReward STEPREWARD                 Step reward
     --goalReward GOALREWARD                 Goal reward
-    --valueFunctionInit {V,Q}               Type of value function used V or Q
-    --randomValueFunctionInit               Initialize the value function with random values
-    --uniformPolicyInit                     Initialize the policy with uniform distribution
+    --valueFunctionInit {V,Q}               Type of value function used
+                                            V or Q
+    --randomValueFunctionInit               Initialize the value function 
+                                            with random values
+    --uniformPolicyInit                     Initialize the policy 
+                                            with uniform distribution
     --problem {1,2,3,4}                     Problem number
-    --plotTable                             Plot the value function and policy
-    --goalStates GOALSTATES                 Goal states list. Format list of tuples [(x, y), (x, y), ...]
-    --splStates SPECIALSTATES               Spl states list. Format list of tuples [(x, y), (x, y), ...]
+    --plotTable                             Plot the value function 
+                                            and policy
+    --goalStates GOALSTATES                 Goal states list. Format 
+                                            list of tuples 
+                                            [(x, y), (x, y), ...]
+    --splStates SPECIALSTATES               Spl states list. Format
+                                            list of tuples 
+                                            [(x, y), (x, y), ...]
     --splReward SPLREWARD                   Special state reward 
 ```
 The configurations for the four problems given in the assignment is hardcoded in the source code for convinience.
@@ -89,7 +107,7 @@ We run this update for all states until the values converge (i.e., they stop cha
 
 Once we have an updated value function, we improve the policy by making it greedy with respect to the current value estimates:
 
-$ \pi'(s) = \arg\max_a \sum_{s'} P(s'|s,a)\big[ R(s,a,s') + \gamma V^\pi(s') \big] $
+$\pi'(s) = \arg\max_a \sum_{s'} P(s'|s,a)\big[ R(s,a,s') + \gamma V^\pi(s') \big]$
 
 If the policy changes, we repeat the evaluation and improvement steps. If the policy remains unchanged (i.e., stable), then we have reached convergence.
 
@@ -126,7 +144,7 @@ INFO:__main__:Policy iteration converged successfully
 ```
 
 ### Plot the value of each state after the policy evaluation is complete: Value and action of each state after the policy evaluation is complete 
-![Value and action of each state after the policy evaluation is complete](./images/prob1.png)
+![Value and action of each state after the policy evaluation is complete](images/prob1.png)
 
 
 ## Problem 2 - Policy Iteration
@@ -176,7 +194,7 @@ INFO:__main__:Policy iteration converged successfully
 
 
 ### Plot the value of each state after the policy evaluation is complete: Value and action of each state after the policy evaluation is complete
-![Value and action of each state after the policy evaluation is complete](./images/prob2.png)
+![Value and action of each state after the policy evaluation is complete](images/prob2.png)
 
 
 ## Problem 3 - Policy Iteration
@@ -228,18 +246,18 @@ INFO:__main__:Plotting optimal policy with values and actions
 ```
 ### Plot the comparison of value and optimal action of each state after each policy improvement (similar to the slides). As many plots as the number of policy improvement goes
 ### Value and action of each state after the 1st policy improvement
-![Value and action of each state after the 1st policy improvement](./images/prob31.png)
+![Value and action of each state after the 1st policy improvement](images/prob31.png)
 
 
 ### Value and action of each state after the 2nd policy improvement
-![Value and action of each state after the 2nd policy improvement](./images/prob32.png)
+![Value and action of each state after the 2nd policy improvement](images/prob32.png)
 
 
 ### Value and action of each state after the 3rd policy improvement
-![Value and action of each state after the 3rd policy improvement](./images/prob33.png)
+![Value and action of each state after the 3rd policy improvement](images/prob33.png)
 
 ### Final Optimal policy
-![Final optimal policy](./images/prob3None.png)
+![Final optimal policy](images/prob3None.png)
 
 **Comment:** The states 1, 4, 11, 14 has the value 0 at the end. If the reward for going to the terminal state were to positive in the problem, these states would have some values other than 0. When the value is 0, the agent has no incentive to reach the goal. So, the decision to choose reward is important.
 
@@ -288,9 +306,9 @@ INFO:__main__:Plotting optimal policy with values and actions
 ```
 ### Plot the comparison of value and optimal action of each state after the algorithm is completed (similar to the slides). One plot for value, one plot for policy.
 ### Value after the algorithm is complete
-![Value after the algorithm is complete](./images/prob4.png)
+![Value after the algorithm is complete](images/prob4.png)
 
 
 ### Policy after the algorithm is complete 
-![Policy after the algorithm is complete](./images/prob4None.png)
+![Policy after the algorithm is complete](images/prob4None.png)
 
