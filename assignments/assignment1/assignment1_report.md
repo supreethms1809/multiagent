@@ -1,7 +1,7 @@
 # Assignment 1 - Policy iteration and Value iteration for grid example
 Author: Supreeth Suresh
 
-Date: 9/17/2025
+Submission Date: 9/19/2025
 
 Course: AI for Multiagent system
 
@@ -34,7 +34,7 @@ python assignment1_main.py [-h] [--task {policy_iteration,value_iteration}] \\
     --splReward SPLREWARD                   Special state reward 
 ```
 The configurations for the four problems given in the assignment is hardcoded in the source code for convinience.
-Alternatively, you can also pass the configurations as the command line options. The usage is shown above.
+Alternatively, you can also pass the configurations as the command line options. The usage is shown above. The code is modular and well commented for description. The code should be able to handle bigger square grid as well.
 
 To run problem 1 use
 ```Python
@@ -72,8 +72,8 @@ python assignment1_main.py --problem 4
 ## Problem 1 - Policy Iteration
 - Policy iteration
 - Policy is uniform distribution policy
-- every step generates reward -1
-- Goal reward 0
+- every step generates reward of -1
+- Goal reward is 0
 - gamma $\gamma=0.9$
 - Goal state (0,0) and (3,3)
 - Evaluate the policy iteratively
@@ -125,18 +125,18 @@ INFO:__main__:Policy converged after 3 iterations
 INFO:__main__:Policy iteration converged successfully
 ```
 
-### Value and action of each state after the policy evaluation is complete 
+### Plot the value of each state after the policy evaluation is complete: Value and action of each state after the policy evaluation is complete 
 ![Value and action of each state after the policy evaluation is complete](./images/prob1.png)
 
 
 ## Problem 2 - Policy Iteration
 - Policy iteration
 - Policy is uniform distribution policy
-- every step generates reward -4
+- every step generates reward of -4
 - Goal state reward 0
 - gamma $\gamma=0.9$
 - Special state reward -1
-- Special state (2,2) --> state 10
+- Special state (2,2) --> state 10, 
 - Goal state (0,0) and (3,3)
 - Evaluate the policy iteratively
 - Plot the value of each state after the policy evaluation is complete(One plot)
@@ -175,7 +175,7 @@ INFO:__main__:Policy iteration converged successfully
 ```
 
 
-### Value and action of each state after the policy evaluation is complete
+### Plot the value of each state after the policy evaluation is complete: Value and action of each state after the policy evaluation is complete
 ![Value and action of each state after the policy evaluation is complete](./images/prob2.png)
 
 
@@ -226,7 +226,7 @@ INFO:__main__:Policy iteration converged successfully
 INFO:__main__:Plotting value function
 INFO:__main__:Plotting optimal policy with values and actions
 ```
-
+### Plot the comparison of value and optimal action of each state after each policy improvement (similar to the slides). As many plots as the number of policy improvement goes
 ### Value and action of each state after the 1st policy improvement
 ![Value and action of each state after the 1st policy improvement](./images/prob31.png)
 
@@ -240,6 +240,8 @@ INFO:__main__:Plotting optimal policy with values and actions
 
 ### Final Optimal policy
 ![Final optimal policy](./images/prob3None.png)
+
+**Comment:** The states 1, 4, 11, 14 has the value 0 at the end. If the reward for going to the terminal state were to positive in the problem, these states would have some values other than 0. When the value is 0, the agent has no incentive to reach the goal. So, the decision to choose reward is important.
 
 ## Problem 4 - Value Iteration
 - Value iteration
@@ -284,6 +286,7 @@ INFO:__main__:Value iteration converged successfully
 INFO:__main__:Plotting value function
 INFO:__main__:Plotting optimal policy with values and actions
 ```
+### Plot the comparison of value and optimal action of each state after the algorithm is completed (similar to the slides). One plot for value, one plot for policy.
 ### Value after the algorithm is complete
 ![Value after the algorithm is complete](./images/prob4.png)
 
