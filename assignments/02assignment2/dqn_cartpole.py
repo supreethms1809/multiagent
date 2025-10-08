@@ -248,11 +248,12 @@ class DQN_agent:
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--problem", type=str, default='1a', choices=['1a', '1b', '1c', '1d', '1e'], help="Problem number")
     parser.add_argument("--env_name", type=str, default='CartPole-v1', help="Environment name")
     parser.add_argument("--render", action="store_true", help="Render the environment")
     parser.add_argument("--render_mode", type=str, default=None, help="Render mode")
     parser.add_argument("--render_time", type=int, default=10, help="Render time")
-    parser.add_argument("--max_steps", type=int, default=100, help="Maximum steps per episode")
+    parser.add_argument("--max_steps", type=int, default=500, help="Maximum steps per episode")
     parser.add_argument("--batch_size", type=int, default=128, help="Batch size")
     parser.add_argument("--gamma", type=float, default=0.99, help="Discount factor")
     parser.add_argument("--epsilon_start", type=float, default=0.9, help="Epsilon start")
@@ -261,7 +262,7 @@ def main():
     parser.add_argument("--tau", type=float, default=0.005, help="Tau")
     parser.add_argument("--lr", type=float, default=1e-4, help="Learning rate")
     parser.add_argument("--memory_capacity", type=int, default=1000000, help="Memory capacity")
-    parser.add_argument("--max_episodes", type=int, default=1000, help="Maximum episodes")
+    parser.add_argument("--max_episodes", type=int, default=50, help="Maximum episodes")
     args = parser.parse_args()
 
     # Setup logging
@@ -283,7 +284,63 @@ def main():
     memory_capacity = args.memory_capacity
     # Maximum episodes
     max_episodes = args.max_episodes
-    config = args
+
+    # Define the assignment problem configurations
+    if args.problem == '1a':
+        max_episodes = 50
+        batch_size = 128
+        gamma = 0.99
+        epsilon_start = 0.9
+        epsilon_end = 0.01
+        epsilon_decay = 2500
+        tau = 0.005
+        lr =3e-4
+        memory_capacity = 1000000
+    elif args.problem == '1b':
+        # Change the episode number from 50 to 1000
+        max_episodes = 1000
+        batch_size = 128
+        gamma = 0.99
+        epsilon_start = 0.9
+        epsilon_end = 0.01
+        epsilon_decay = 2500
+        tau = 0.005
+        lr = 1e-4
+        memory_capacity = 1000000
+    elif args.problem == '1c':
+        max_episodes = 1000
+        # Change the batch size from 128 to 1500
+        batch_size = 1500
+        gamma = 0.99
+        epsilon_start = 0.9
+        epsilon_end = 0.01
+        epsilon_decay = 2500
+        tau = 0.005
+        lr = 1e-4
+        memory_capacity = 1000000
+    elif args.problem == '1d':
+        max_episodes = 1000
+        batch_size = 128
+        # Change the gamma from 0.99 to 0.89
+        gamma = 0.89
+        epsilon_start = 0.9
+        epsilon_end = 0.01
+        epsilon_decay = 2500
+        tau = 0.005
+        lr = 1e-4
+        memory_capacity = 1000000
+    else:
+        max_episodes = 1000
+        batch_size = 128
+        gamma = 0.99
+        epsilon_start = 0.9     
+        epsilon_end = 0.01
+        epsilon_decay = 2500
+        tau = 0.005
+        # Change the learning rate from 1e-4 to 1e-2
+        lr = 1e-2
+        memory_capacity = 1000000
+
 
     # Initialize environment
     env, state_space, action_space = initialize_environment(env_name=env_name, render_mode=render_mode)
@@ -330,7 +387,8 @@ def main():
     ax2.grid(True)
     
     plt.tight_layout()
-    plt.show()
+    plt.savefig(f'images/episode_rewards_{args.problem}.png', dpi=150, bbox_inches='tight')
+    #plt.show()
 
     # Save the model
     agent.save_model(max_episodes)

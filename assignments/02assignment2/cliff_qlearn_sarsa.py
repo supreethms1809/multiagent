@@ -5,9 +5,11 @@ import logging
 import argparse
 import matplotlib.pyplot as plt
 
+# Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# GridWorld class
 class GridWorld:
     def __init__(self, config):
         self.config = config
@@ -31,12 +33,15 @@ class GridWorld:
         self.alpha_qlearning = config.alpha_qlearning
         self.alpha_sarsa = config.alpha_sarsa
 
+    # Initialize Q-learning Q-table (numpy is faster but dictionary is easier to understand)
     def initialize_Q_qlearning(self):
         return {state: {action: 0 for action in self.actions} for state in self.states}
 
+    # Initialize SARSA Q-table
     def initialize_Q_sarsa(self):
         return {state: {action: 0 for action in self.actions} for state in self.states}
 
+    # Step function
     def step(self, state, action):
         # If already at goal, stay there
         if state in self.goal_states:
@@ -75,80 +80,117 @@ class GridWorld:
             
         return next_state, reward, done
 
+    # Although the policy functions are the same for Q-learning and SARSA, 
+    # I am keeping them separate for my own clarity.
+    # Get action epsilon-greedy
     def get_action_epsilon_greedy(self, state):
+        # If random number is less than epsilon, return random action
         if np.random.rand() < self.epsilon:
             return np.random.choice(self.actions)
         else:
+            # Otherwise, return action with highest Q-value
             return self.get_action_max_Q_sarsa(state)
 
+    # Get action with highest Q-value - Greedy policy
     def get_action_max_Q_sarsa(self, state):
+        # Return action with highest Q-value
         return max(self.Q_sarsa[state], key=self.Q_sarsa[state].get)
 
+    # SARSA algorithm
     def sarsa(self):
-        # Q list for plotting and episode rewards for convergence
         Q_sarsa = []
         episode_rewards = []
         
+        # Run for maximum number of episodes
         for episode in range(self.max_episodes):
+            # Initialize current state to start state
             current_state = self.start_state
+            # Get action epsilon-greedy
             current_action = self.get_action_epsilon_greedy(current_state)
+            # Initialize episode reward
             episode_reward = 0
             
+            # Run for maximum number of steps per episode
             for step in range(self.max_steps_per_episode):
                 state = current_state
+                # Initialize action to current action
                 action = current_action
+                # Take step
                 next_state, reward, done = self.step(state, action)
+                # Get action epsilon-greedy - on policy. So still epsilon-greedy policy for next action.
                 next_action = self.get_action_epsilon_greedy(next_state)
                 
                 # SARSA update: use actual next action
                 self.Q_sarsa[state][action] = self.Q_sarsa[state][action] + self.alpha_sarsa * (reward + self.gamma * self.Q_sarsa[next_state][next_action] - self.Q_sarsa[state][action])
                 
+                # total reward for episode for plotting
                 episode_reward += reward
+                # Update current state to next state
                 current_state = next_state
+                # Update current action to next action
                 current_action = next_action
                 
+                # If done, break
                 if done:
+                    #logger.info(f"Episode {episode} completed in {step} steps with reward {episode_reward}")
                     break
-            
+
+            # Append episode reward to list for plotting
             episode_rewards.append(episode_reward)
             
             # Store Q-table every 100 episodes for plotting
+            # This is not necessary for SARSA, but is useful for plotting.
             if episode % 100 == 0:
                 Q_sarsa.append(self.Q_sarsa.copy())
                 
         return self.Q_sarsa, Q_sarsa, episode_rewards
 
+    # Get action epsilon-greedy
     def get_action_epsilon_greedy_qlearning(self, state):
+        # If random number is less than epsilon, return random action
         if np.random.rand() < self.epsilon:
             return np.random.choice(self.actions)
         else:
+            # Otherwise, return action with highest Q-value
             return self.get_action_max_Q(state)
 
+    # Get action with highest Q-value - Greedy policy
     def get_action_max_Q(self, state):
+        # Return action with highest Q-value
         return max(self.Q_qlearning[state], key=self.Q_qlearning[state].get)
 
+    # Q-learning algorithm
     def Qlearning(self):
         # Q list for plotting and episode rewards for convergence
         Q_qlearning = []
         episode_rewards = []
         
+        # Run for maximum number of episodes
         for episode in range(self.max_episodes):
+            # Initialize current state to start state
             current_state = self.start_state
             episode_reward = 0
             
+            # Run for maximum number of steps per episode
             for step in range(self.max_steps_per_episode):
+                # Initialize state to current state
                 state = current_state
+                # Get action epsilon-greedy
                 action = self.get_action_epsilon_greedy_qlearning(state)
+                # Take step
                 next_state, reward, done = self.step(state, action)
                 
                 # Q-learning update: use max Q-value for next state
                 max_q_next = max(self.Q_qlearning[next_state].values())
                 self.Q_qlearning[state][action] = self.Q_qlearning[state][action] + self.alpha_qlearning * (reward + self.gamma * max_q_next - self.Q_qlearning[state][action])
                 
+                # total reward for episode for plotting
                 episode_reward += reward
                 current_state = next_state
                 
+                # If done, break
                 if done:
+                    #logger.info(f"Episode {episode} completed in {step} steps with reward {episode_reward}")
                     break
             
             episode_rewards.append(episode_reward)
@@ -501,9 +543,9 @@ class GridWorld:
         print(f"Final average Q-value - SARSA: {sarsa_avg_q[-1]:.3f}, Q-learning: {qlearning_avg_q[-1]:.3f}")
 
     # Plotting function is generated by VSCode github copilot
-    def plot_episode_rewards(self, sarsa_rewards, qlearning_rewards):
+    def plot_episode_rewards(self, sarsa_rewards, qlearning_rewards, gamma):
         """
-        Plot episode rewards over time - a better convergence metric
+        Plot episode rewards over time - a better convergence metric using log scale for clear differentiation
         """
         # Create smoothed rewards using moving average
         window_size = 50
@@ -520,17 +562,23 @@ class GridWorld:
         
         fig, ax = plt.subplots(figsize=(12, 6))
         
+        # Use normal episode indexing (0-based)
+        episodes = np.arange(len(sarsa_rewards))
+        
         # Plot raw rewards (thin, transparent)
-        ax.plot(sarsa_rewards, 'b-', alpha=0.1, linewidth=0.5, label='SARSA (raw)')
-        ax.plot(qlearning_rewards, 'r-', alpha=0.1, linewidth=0.5, label='Q-learning (raw)')
+        ax.plot(episodes, sarsa_rewards, 'b-', alpha=0.1, linewidth=0.5, label='SARSA (raw)')
+        ax.plot(episodes, qlearning_rewards, 'r-', alpha=0.1, linewidth=0.5, label='Q-learning (raw)')
         
         # Plot smoothed rewards (thick, opaque)
-        ax.plot(sarsa_smooth, 'b-', linewidth=2, label=f'SARSA (smoothed, window={window_size})')
-        ax.plot(qlearning_smooth, 'r-', linewidth=2, label=f'Q-learning (smoothed, window={window_size})')
+        ax.plot(episodes, sarsa_smooth, 'b-', linewidth=2, label=f'SARSA (smoothed, window={window_size})')
+        ax.plot(episodes, qlearning_smooth, 'r-', linewidth=2, label=f'Q-learning (smoothed, window={window_size})')
+        
+        # Set log scale only for y-axis
+        ax.set_yscale('log')
         
         ax.set_xlabel('Episode')
-        ax.set_ylabel('Episode Reward')
-        ax.set_title('Episode Rewards Over Time')
+        ax.set_ylabel('Episode Reward (log scale)')
+        ax.set_title(f'Episode Rewards Over Time when gamma = {gamma}')
         ax.legend()
         ax.grid(True, alpha=0.3)
         
@@ -540,8 +588,8 @@ class GridWorld:
         ax.legend()
         
         plt.tight_layout()
-        plt.show()
-        #plt.savefig('episode_rewards.png', dpi=150, bbox_inches='tight')
+        #plt.show()
+        plt.savefig(f'images/episode_rewards_log_{gamma}.png', dpi=150, bbox_inches='tight')
         plt.close()
         
         # Print statistics
@@ -614,36 +662,42 @@ class GridWorld:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--grid_size", type=tuple, default=(6, 10), help="Size of the grid")
-    parser.add_argument("--goal_states", type=list, default=[(5, 9)], help="Goal states")
+    parser.add_argument("--grid_size", type=tuple, default=(4, 6), help="Size of the grid")
+    parser.add_argument("--goal_states", type=list, default=[(0, 5)], help="Goal states")
     parser.add_argument("--start_state", type=list, default=[(0, 0)], help="Start state")
-    parser.add_argument("--cliff_states", type=list, default=[(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (4, 7), (2, 8)], help="Cliff states")
+    parser.add_argument("--cliff_states", type=list, default=[(0, 1), (0, 2), (0, 3), (0, 4)], help="Cliff states")
     parser.add_argument("--cliff_reward", type=int, default=-100, help="Reward for falling into a cliff")
     parser.add_argument("--step_reward", type=int, default=-4, help="Reward for each step")
     parser.add_argument("--goal_reward", type=int, default=100, help="Reward for reaching the goal")
-    parser.add_argument("--gamma", type=float, default=0.99, help="Discount factor")
-    parser.add_argument("--epsilon", type=float, default=0.05, help="Epsilon for epsilon-greedy policy")
+    parser.add_argument("--gamma", type=float, default=0.1, help="Discount factor")
+    parser.add_argument("--epsilon", type=float, default=0.01, help="Epsilon for epsilon-greedy policy")
     parser.add_argument("--max_episodes", type=int, default=10000, help="Maximum number of episodes")
     parser.add_argument("--max_steps_per_episode", type=int, default=100, help="Maximum steps per episode")
     parser.add_argument("--alpha_qlearning", type=float, default=0.1, help="Learning rate for Q-learning")
     parser.add_argument("--alpha_sarsa", type=float, default=0.1, help="Learning rate for SARSA")
     args = parser.parse_args()
     config = args
-    gridworld = GridWorld(config)
-    Q_sarsa, Q_sarsa_list, sarsa_rewards = gridworld.sarsa()
-    Q_qlearning, Q_qlearning_list, qlearning_rewards = gridworld.Qlearning()
+
+    # Predefined configurations for assignment
+    gamma_list = [0.01, 0.1, 0.5, 0.99, 1]
+
+    for gamma in gamma_list:
+        config.gamma = gamma
+        gridworld = GridWorld(config)
+        Q_sarsa, Q_sarsa_list, sarsa_rewards = gridworld.sarsa()
+        Q_qlearning, Q_qlearning_list, qlearning_rewards = gridworld.Qlearning()
     
-    # Plot the gridworld environment with learned paths
-    gridworld.plot_gridworld_with_path(Q_sarsa, Q_qlearning)
-    
-    # Plot episode rewards (better convergence metric)
-    gridworld.plot_episode_rewards(sarsa_rewards, qlearning_rewards)
-    
-    # Plot Q-value convergence and final Q-values
-    #gridworld.plot_q_values_convergence(Q_sarsa_list, Q_qlearning_list)
-    
-    # Plot policy comparison
-    #gridworld.plot_policy_comparison(Q_sarsa, Q_qlearning)
+        # # Plot the gridworld environment with learned paths
+        # gridworld.plot_gridworld_with_path(Q_sarsa, Q_qlearning)
+        
+        # Plot episode rewards (better convergence metric)
+        gridworld.plot_episode_rewards(sarsa_rewards, qlearning_rewards, gamma)
+        
+        # # Plot Q-value convergence and final Q-values
+        # gridworld.plot_q_values_convergence(Q_sarsa_list, Q_qlearning_list)
+        
+        # # Plot policy comparison
+        # gridworld.plot_policy_comparison(Q_sarsa, Q_qlearning)
 
 if __name__ == "__main__":
     main()
