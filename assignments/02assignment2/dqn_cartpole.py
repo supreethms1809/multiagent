@@ -50,11 +50,6 @@ def setup_logging():
 
 # Initialize the environment
 def initialize_environment(env_name, render_mode="human"):
-    # Set the random seed
-    random.seed(42)
-    np.random.seed(42)
-    torch.manual_seed(42)
-
     env = gym.make(env_name, render_mode=render_mode)
     state_space = env.observation_space.shape[0]
     action_space = env.action_space.n
@@ -178,7 +173,7 @@ class DQN_agent:
         self.optimizer.zero_grad()
         loss.backward()
         for param in self.policy_net.parameters():
-            param.grad.data.clamp_(-1, 1)
+            param.grad.data.clamp_(-100, 100)
         self.optimizer.step()
         
         return loss.item()
@@ -189,9 +184,8 @@ class DQN_agent:
         
         for episode in range(self.max_episodes):
             # Initialize the environment and get its initial state for the episode
-            state, info = self.env.reset(seed=42)
-            self.env.action_space.seed(42)
-            self.env.observation_space.seed(42)
+            state, info = self.env.reset()
+
             state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
             episode_reward = 0
             episode_duration = 0
@@ -260,8 +254,8 @@ def main():
     parser.add_argument("--epsilon_end", type=float, default=0.01, help="Epsilon end")
     parser.add_argument("--epsilon_decay", type=int, default=2500, help="Epsilon decay")
     parser.add_argument("--tau", type=float, default=0.005, help="Tau")
-    parser.add_argument("--lr", type=float, default=1e-4, help="Learning rate")
-    parser.add_argument("--memory_capacity", type=int, default=1000000, help="Memory capacity")
+    parser.add_argument("--lr", type=float, default=3e-3, help="Learning rate")
+    parser.add_argument("--memory_capacity", type=int, default=10000, help="Memory capacity")
     parser.add_argument("--max_episodes", type=int, default=50, help="Maximum episodes")
     args = parser.parse_args()
 
@@ -295,7 +289,7 @@ def main():
         epsilon_decay = 2500
         tau = 0.005
         lr =3e-4
-        memory_capacity = 1000000
+        memory_capacity = 10000
     elif args.problem == '1b':
         # Change the episode number from 50 to 1000
         max_episodes = 1000
@@ -305,8 +299,8 @@ def main():
         epsilon_end = 0.01
         epsilon_decay = 2500
         tau = 0.005
-        lr = 1e-4
-        memory_capacity = 1000000
+        lr = 3e-4
+        memory_capacity = 10000
     elif args.problem == '1c':
         max_episodes = 1000
         # Change the batch size from 128 to 1500
@@ -316,8 +310,8 @@ def main():
         epsilon_end = 0.01
         epsilon_decay = 2500
         tau = 0.005
-        lr = 1e-4
-        memory_capacity = 1000000
+        lr = 3e-4
+        memory_capacity = 10000
     elif args.problem == '1d':
         max_episodes = 1000
         batch_size = 128
@@ -327,8 +321,8 @@ def main():
         epsilon_end = 0.01
         epsilon_decay = 2500
         tau = 0.005
-        lr = 1e-4
-        memory_capacity = 1000000
+        lr = 3e-4
+        memory_capacity = 10000
     else:
         max_episodes = 1000
         batch_size = 128
@@ -339,7 +333,7 @@ def main():
         tau = 0.005
         # Change the learning rate from 1e-4 to 1e-2
         lr = 1e-2
-        memory_capacity = 1000000
+        memory_capacity = 10000
 
 
     # Initialize environment
