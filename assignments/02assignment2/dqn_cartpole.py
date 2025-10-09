@@ -338,9 +338,9 @@ def main():
         memory_capacity = 10000
     elif args.problem == '1c':
         max_episodes = 1000
-        # Change the batch size from 128 to 1500
-        batch_size = 1500
-        gamma = 0.99
+        batch_size = 128
+        # Change the gamma from 0.99 to 0.89
+        gamma = 0.89
         epsilon_start = 0.9
         epsilon_end = 0.01
         epsilon_decay = 2500
@@ -350,9 +350,9 @@ def main():
         memory_capacity = 10000
     elif args.problem == '1d':
         max_episodes = 1000
-        batch_size = 128
-        # Change the gamma from 0.99 to 0.89
-        gamma = 0.89
+        # Change the mini-batch size from 128 to 1500
+        batch_size = 1500
+        gamma = 0.99
         epsilon_start = 0.9
         epsilon_end = 0.01
         epsilon_decay = 2500
