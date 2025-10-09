@@ -1,3 +1,11 @@
+"""
+Assignment 2: Problem 2: Cliff walk example
+
+Usage:
+python cliff_qlearn_sarsa.py --run_all
+
+Implementation of Q-learning and SARSA for the Cliff walk example.
+"""
 import os
 import sys
 import numpy as np

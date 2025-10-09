@@ -117,6 +117,7 @@ class DQN_agent:
         self.epsilon_end = training_config["EPSILON_END"]
         self.epsilon_decay = training_config["EPSILON_DECAY"]
         self.tau = training_config["TAU"]
+        self.target_update_freq = training_config["TARGET_UPDATE_FREQ"]
         self.lr = training_config["LR"]
         self.memory_capacity = training_config["MEMORY_CAPACITY"]
         self.max_episodes = training_config["MAX_EPISODES"]
@@ -216,12 +217,16 @@ class DQN_agent:
                 # Train the DQN
                 self.train_dqn()
 
-                # Update the target network
-                target_net_state_dict = self.target_net.state_dict()
-                policy_net_state_dict = self.policy_net.state_dict()
-                for key in policy_net_state_dict:
-                    target_net_state_dict[key] = policy_net_state_dict[key] * self.tau + target_net_state_dict[key] * (1 - self.tau)
-                self.target_net.load_state_dict(target_net_state_dict)
+                # Update the target network every target_update_freq steps - still using soft update
+                if self.steps_done % self.target_update_freq == 0:
+                    target_net_state_dict = self.target_net.state_dict()
+                    policy_net_state_dict = self.policy_net.state_dict()
+                    for key in policy_net_state_dict:
+                        target_net_state_dict[key] = policy_net_state_dict[key] * self.tau + target_net_state_dict[key] * (1 - self.tau)
+                    self.target_net.load_state_dict(target_net_state_dict)
+                    # # Log every target update
+                    # if self.steps_done % (self.target_update_freq * 10) == 0:
+                    #     self.logger.info(f"Target network updated at step {self.steps_done}")
 
                 # Update the episode reward and duration for plotting
                 episode_reward += reward.item()
@@ -280,6 +285,7 @@ def main():
     parser.add_argument("--epsilon_end", type=float, default=0.01, help="Epsilon end")
     parser.add_argument("--epsilon_decay", type=int, default=2500, help="Epsilon decay")
     parser.add_argument("--tau", type=float, default=0.005, help="Tau")
+    parser.add_argument("--target_update_freq", type=int, default=1, help="Target network update frequency (steps)")
     parser.add_argument("--lr", type=float, default=3e-3, help="Learning rate")
     parser.add_argument("--memory_capacity", type=int, default=10000, help="Memory capacity")
     parser.add_argument("--max_episodes", type=int, default=50, help="Maximum episodes")
@@ -299,6 +305,7 @@ def main():
     epsilon_end = args.epsilon_end
     epsilon_decay = args.epsilon_decay
     tau = args.tau
+    target_update_freq = args.target_update_freq
     # Learning rate
     lr = args.lr
     memory_capacity = args.memory_capacity
@@ -314,6 +321,7 @@ def main():
         epsilon_end = 0.01
         epsilon_decay = 2500
         tau = 0.005
+        target_update_freq = 1
         lr =3e-4
         memory_capacity = 10000
     elif args.problem == '1b':
@@ -325,6 +333,7 @@ def main():
         epsilon_end = 0.01
         epsilon_decay = 2500
         tau = 0.005
+        target_update_freq = 1
         lr = 3e-4
         memory_capacity = 10000
     elif args.problem == '1c':
@@ -336,6 +345,7 @@ def main():
         epsilon_end = 0.01
         epsilon_decay = 2500
         tau = 0.005
+        target_update_freq = 1
         lr = 3e-4
         memory_capacity = 10000
     elif args.problem == '1d':
@@ -347,6 +357,7 @@ def main():
         epsilon_end = 0.01
         epsilon_decay = 2500
         tau = 0.005
+        target_update_freq = 1
         lr = 3e-4
         memory_capacity = 10000
     elif args.problem == '1e':
@@ -357,6 +368,7 @@ def main():
         epsilon_end = 0.01
         epsilon_decay = 2500
         tau = 0.005
+        target_update_freq = 1
         # Change the learning rate from 1e-4 to 1e-2
         lr = 1e-2
         memory_capacity = 10000
@@ -377,6 +389,7 @@ def main():
                     "EPSILON_END": epsilon_end,
                     "EPSILON_DECAY": epsilon_decay,
                     "TAU": tau,
+                    "TARGET_UPDATE_FREQ": target_update_freq,
                     "LR": lr,
                     "MEMORY_CAPACITY": memory_capacity,
                     "MAX_EPISODES": max_episodes,
