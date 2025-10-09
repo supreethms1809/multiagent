@@ -240,6 +240,32 @@ class DQN_agent:
         torch.save(self.policy_net.state_dict(), f"dqn_cartpole_model_{episode}.pth")
         self.logger.info(f"Model saved to dqn_cartpole_model_{episode}.pth")
 
+    def plot_episode_rewards(self, total_episode_duration, problem):
+
+        #smooth the total_episode_duration
+        smooth_total_episode_duration = []
+        window_size = 100
+        for i in range(len(total_episode_duration)):
+            start_idx = max(0, i - window_size + 1)
+            smooth_total_episode_duration.append(np.mean(total_episode_duration[start_idx:i+1]))
+
+        episodes = range(len(total_episode_duration))
+
+        fig, ax = plt.subplots(figsize=(6, 4))
+
+        ax.plot(episodes, total_episode_duration,'b-', alpha=0.9, linewidth=0.5, label='Episode Duration (raw)')
+        ax.plot(episodes, smooth_total_episode_duration,'b-', linewidth=2, label='Episode Duration (smoothed)')
+        ax.set_xlabel('Episode')
+        ax.set_ylabel('Episode Duration (Steps)')
+        ax.set_title('Episode Duration Over Time')
+        ax.grid(True)
+        ax.legend()
+        plt.tight_layout()
+        plt.savefig(f'images/episode_rewards_{problem}.png', dpi=150, bbox_inches='tight')
+        plt.close()
+
+        self.logger.info(f"Episode Duration Over Time plot saved to images/episode_rewards_{problem}.png")
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--problem", type=str, default='1a', choices=['1a', '1b', '1c', '1d', '1e'], help="Problem number")
@@ -323,7 +349,7 @@ def main():
         tau = 0.005
         lr = 3e-4
         memory_capacity = 10000
-    else:
+    elif args.problem == '1e':
         max_episodes = 1000
         batch_size = 128
         gamma = 0.99
@@ -334,7 +360,8 @@ def main():
         # Change the learning rate from 1e-4 to 1e-2
         lr = 1e-2
         memory_capacity = 10000
-
+    else:
+        raise ValueError(f"Unknown problem: {args.problem}. Must be one of: 1a, 1b, 1c, 1d, 1e")
 
     # Initialize environment
     env, state_space, action_space = initialize_environment(env_name=env_name, render_mode=render_mode)
@@ -356,36 +383,17 @@ def main():
                     "logger": logger
             }
 
+    logger.info(f"Training configuration: {training_config}")
+
     # Initialize Deep Q-learning agent
     agent = DQN_agent(n_observations, n_actions, training_config, env, max_steps)
 
     # Train the agent
     total_reward_per_episode, total_episode_duration = agent.train_wrapper()
-
-    # Plot episode rewards and duration
-    # Create subplots to show both metrics
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
-    
-    # Plot episode rewards
-    ax1.plot(total_reward_per_episode)
-    ax1.set_xlabel('Episode')
-    ax1.set_ylabel('Episode Reward')
-    ax1.set_title('Episode Rewards Over Time')
-    ax1.grid(True)
-    
-    # Plot episode duration
-    ax2.plot(total_episode_duration)
-    ax2.set_xlabel('Episode')
-    ax2.set_ylabel('Episode Duration (Steps)')
-    ax2.set_title('Episode Duration Over Time')
-    ax2.grid(True)
-    
-    plt.tight_layout()
-    plt.savefig(f'images/episode_rewards_{args.problem}.png', dpi=150, bbox_inches='tight')
-    #plt.show()
+    agent.plot_episode_rewards(total_episode_duration, args.problem)
 
     # Save the model
-    agent.save_model(max_episodes)
+    # agent.save_model(max_episodes)
 
 if __name__ == "__main__":
     main()
